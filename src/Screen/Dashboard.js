@@ -37,10 +37,10 @@ static navigationOptions = { header: null }
 
         return (
             <View  >
-                <Text>Home Page</Text>
+                <Text></Text>
                 <Button
                     onPress={() => this.LogOut()}
-                    title="Sign In"
+                    title="Log Out"
                     color='black'
 
                 />

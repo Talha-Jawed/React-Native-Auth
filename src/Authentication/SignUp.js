@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, ScrollView, Text, TextInput, StyleSheet, Button, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import { black } from 'ansi-colors';
+import firebase from "../Config/Firebase"
+import { StackActions, NavigationActions } from 'react-navigation';
+
 
 export default class SignUp extends React.Component {
     constructor(props) {
@@ -22,32 +24,38 @@ export default class SignUp extends React.Component {
         else if (!(/^(?:\+\d{2})?\d{11}(?:,(?:\+\d{2})?\d{11})*$/.test(Mobile))) {
             alert('invalid Mpbile No#')
         }
-        else if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(Email))){
+        else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(Email))) {
             alert('Invalid Email')
         }
-        else if(Password.length < 4){
+        else if (Password.length < 4) {
             alert('Week Password')
         }
-         else {
+        else {
             console.log('log');
-            // const info = {
-            //     name: nickname,
-            //     number: number
-            // }
-            // this.props.history.push('/Image')
-            // console.log(info, 'info******');
-            // firebase.database().ref('user/' + currentUID + '/Profile/').update(info)
-            //     .then(() => {
-            //         console.log('done')
-            //     })
+            firebase.auth().createUserWithEmailAndPassword(Email, Password)
+                .then((success) => {
+                    var currentUserUid = firebase.auth().currentUser.uid;
+                    // firebase.database().ref('/UserData/' + currentUserUid + '/').push(obj);
+                    // console.log('signup successfully', success);
+                    const resetAction = StackActions.reset({
+                        index: 0,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'Home' }),
+                            // NavigationActions.navigate({ routeName: 'LogIn' }),
+                        ]
+                    })
+                    this.props.navigation.dispatch(resetAction)
+                })
+                .catch((error) => {
+                    console.error('something went wrong', error);
+
+                })
         }
 
     }
 
     render() {
         const { FirstName, LastName, Mobile, Email, Password, } = this.state
-        // const inputAccessoryViewID = "uniqueID";
-        console.log(Password);
 
         return (
             // <View   >
@@ -133,12 +141,12 @@ const styles = StyleSheet.create({
         // marginTop: 20,
         // opacity:0.9
     },
-    
+
     Heading: {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
-        marginTop : 60,
+        marginTop: 60,
         marginBottom: 85,
         fontSize: 50,
         fontFamily: 'Helvetica',
@@ -162,10 +170,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         // width:150,
         // justifyContent: 'space-between',
-        
-        
+
+
     },
-    ButtonText:{
+    ButtonText: {
         fontWeight: 'bold',
         color: "#ffff",
         // alignItems:'center'
