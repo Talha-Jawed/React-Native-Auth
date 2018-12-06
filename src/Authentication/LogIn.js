@@ -4,7 +4,7 @@ import { black } from 'ansi-colors';
 import firebase from '../Config/Firebase';
 import { StackActions, NavigationActions } from 'react-navigation';
 
-var provider = new firebase.auth.FacebookAuthProvider();
+// var provider = new firebase.auth.FacebookAuthProvider();
 export default class LogIn extends React.Component {
     constructor(props) {
         super(props);
@@ -14,16 +14,10 @@ export default class LogIn extends React.Component {
         };
     }
 
-    logIn() {
-        const { Email, Password } = this.state
-
-        firebase.auth().signInWithEmailAndPassword(Email, Password)
-            .then((success) => {
-                // this.props.navigation.navigate('Home')
-                // console.log('signin successfully', success.user);
-                // localStorage.setItem('currentUserUid', success.user.uid)
-                // location = './index.html';
-                // this.props.history.push('/Dashboard')
+    componentDidMount() {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user != null) {
+                console.log(user);
                 const resetAction = StackActions.reset({
                     index: 0,
                     actions: [
@@ -32,9 +26,25 @@ export default class LogIn extends React.Component {
                     ]
                 })
                 this.props.navigation.dispatch(resetAction)
+
+            }
+        })
+    }
+
+    logIn() {
+        const { Email, Password } = this.state
+
+        firebase.auth().signInWithEmailAndPassword(Email, Password)
+            .then((success) => {
+                const resetAction = StackActions.reset({
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ routeName: 'Home' }),
+                    ]
+                })
+                this.props.navigation.dispatch(resetAction)
             })
             .catch((error) => {
-                // swal("Something went wrong", "", "error");
                 alert('Invalid Email & Password')
                 console.log('something went wrong', error)
             })
@@ -44,12 +54,49 @@ export default class LogIn extends React.Component {
     SignUp() {
         console.log("sign up page");
         this.props.navigation.navigate('SignUp')
-        
+
+    }
+
+    async logInFB() {
+
+        const {
+            type,
+            token,
+            expires,
+            permissions,
+            declinedPermissions,
+        } = await Expo.Facebook.logInWithReadPermissionsAsync('307393933208156', {
+            permissions: ['public_profile'],
+        });
+        if (type === 'success') {
+            const credential = firebase.auth.FacebookAuthProvider.credential(token)
+
+            firebase.auth().signInAndRetrieveDataWithCredential(credential).catch((error) => {
+                console.log(error);
+
+            })
+            // Get the user's name using Facebook's Graph API
+            // const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+            // Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+            console.log("fb login");
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Home' }),
+                    // NavigationActions.navigate({ routeName: 'LogIn' }),
+                ]
+            })
+            this.props.navigation.dispatch(resetAction)
+        } else {
+            type === 'cancel'
+            alert('Invalid Email & Password')
+        }
+
     }
     static navigationOptions = { header: null }
     render() {
         const { Email, Password } = this.state
-        
+
 
         return (
             <View style={styles.container} >
@@ -97,8 +144,12 @@ export default class LogIn extends React.Component {
                         <Text style={styles.ButtonText} >Create Account</Text>
 
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.buton} onPress={() => this.logInFB()}>
+                        <Text style={styles.ButtonText} >Facebook LogIn</Text>
+
+                    </TouchableOpacity>
                 </ScrollView>
-             
+
             </View>
         );
     }
@@ -112,7 +163,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 20
     },
-    
+
     Heading: {
         alignItems: 'center',
         justifyContent: 'center',
