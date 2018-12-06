@@ -75,21 +75,16 @@ export default class LogIn extends React.Component {
                 console.log(error);
 
             })
-            // Get the user's name using Facebook's Graph API
-            // const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-            // Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
             console.log("fb login");
             const resetAction = StackActions.reset({
                 index: 0,
                 actions: [
                     NavigationActions.navigate({ routeName: 'Home' }),
-                    // NavigationActions.navigate({ routeName: 'LogIn' }),
                 ]
             })
             this.props.navigation.dispatch(resetAction)
         } else {
             type === 'cancel'
-            alert('Invalid Email & Password')
         }
 
     }
@@ -103,7 +98,6 @@ export default class LogIn extends React.Component {
                 <ScrollView style={styles.body} keyboardDismissMode="interactive">
                     <Text style={styles.Heading}>Log In</Text>
                     <TextInput
-                        // style={{height: 40, borderColor: 'gray', borderWidth: 1 , width:'75%'}}
                         style={styles.input}
                         onChangeText={(e) => this.setState({ Email: e })}
                         value={Email}
@@ -113,7 +107,6 @@ export default class LogIn extends React.Component {
 
                     />
                     <TextInput
-                        // style={{height: 40, borderColor: 'gray', borderWidth: 1 , width:'75%'}}
                         style={styles.input}
                         secureTextEntry={true}
                         onChangeText={(e) => this.setState({ Password: e })}
@@ -126,12 +119,6 @@ export default class LogIn extends React.Component {
                         <TouchableOpacity style={styles.buton} onPress={() => this.logIn()}>
                             <Text style={styles.ButtonText} >Log In</Text>
                         </TouchableOpacity>
-                        {/* <Button
-                            onPress={() => this.logIn()}
-                            title="Sign In"
-                            color='black'
-
-                        /> */}
                     </View>
                     {/* <Button
 
@@ -142,12 +129,12 @@ export default class LogIn extends React.Component {
                     /> */}
                     <TouchableOpacity style={styles.buton} onPress={() => this.SignUp()}>
                         <Text style={styles.ButtonText} >Create Account</Text>
-
                     </TouchableOpacity>
+
                     <TouchableOpacity style={styles.buton} onPress={() => this.logInFB()}>
                         <Text style={styles.ButtonText} >Facebook LogIn</Text>
-
                     </TouchableOpacity>
+                
                 </ScrollView>
 
             </View>
