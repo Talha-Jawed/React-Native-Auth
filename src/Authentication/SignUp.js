@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, ScrollView, Text, TextInput, StyleSheet, Button, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import firebase from "../Config/Firebase"
-import { StackActions, NavigationActions } from 'react-navigation';
+import { connect } from 'react-redux'
+import { userAction } from '../../Redux/actions/authAction'
 
 
-export default class SignUp extends React.Component {
+class SignUp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,7 +17,7 @@ export default class SignUp extends React.Component {
     }
 
     SignUp() {
-        const { FirstName, LastName, Mobile, Email, Password, } = this.state
+        const { FirstName, LastName, Mobile, Email, Password } = this.state
         if (FirstName.length < 3 || LastName.length < 3) {
             alert('Something went wrong')
         }
@@ -32,24 +32,7 @@ export default class SignUp extends React.Component {
         }
         else {
             console.log('log');
-            firebase.auth().createUserWithEmailAndPassword(Email, Password)
-                .then((success) => {
-                    var currentUserUid = firebase.auth().currentUser.uid;
-                    // firebase.database().ref('/UserData/' + currentUserUid + '/').push(obj);
-                    // console.log('signup successfully', success);
-                    const resetAction = StackActions.reset({
-                        index: 0,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'Home' }),
-                            // NavigationActions.navigate({ routeName: 'LogIn' }),
-                        ]
-                    })
-                    this.props.navigation.dispatch(resetAction)
-                })
-                .catch((error) => {
-                    console.error('something went wrong', error);
-
-                })
+            this.props.userAuth(FirstName, LastName, Mobile, Email, Password)
         }
 
     }
@@ -114,13 +97,6 @@ export default class SignUp extends React.Component {
 
                         /> */}
                     </View>
-                    {/* <Button
-
-                        onPress={() => this.logIn()}
-                        title="Creat Accout"
-                        color='black'
-
-                    /> */}
                     <TouchableOpacity style={styles.buton} onPress={() => { this.SignUp() }}>
                         <Text style={styles.ButtonText}>Sign Up</Text>
                     </TouchableOpacity>
@@ -170,8 +146,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         // width:150,
         // justifyContent: 'space-between',
-
-
     },
     ButtonText: {
         fontWeight: 'bold',
@@ -181,3 +155,19 @@ const styles = StyleSheet.create({
     }
 
 });
+function mapStateToProps(states) {
+    return ({
+        // products: states.productReducer.PRODUCTS,
+
+    })
+}
+
+function mapDispatchToProps(dispatch) {
+    return ({
+        userAuth: (FirstName, LastName, Mobile, Email, Password) => {
+            dispatch(userAction(FirstName, LastName, Mobile, Email, Password));
+        }
+    })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

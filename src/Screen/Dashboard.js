@@ -1,63 +1,118 @@
 import React from 'react';
-import { View, ScrollView, Text, TextInput, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, ScrollView, Text, TextInput, StyleSheet, Button, TouchableOpacity, Picker } from 'react-native';
 import firebase from '../Config/Firebase'
 import { StackActions, NavigationActions } from 'react-navigation';
-
-
-export default class Home extends React.Component {
+import { connect } from 'react-redux'
+import AppHeader from '../Component/Header/Header'
+class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            language: '',
+            catagory: '',
+            Mobile: ''
         };
     }
+    componentDidMount() {
+        console.log('dashboard', this.props);
 
-LogOut(){
-    // this.props.navigation.navigate('LogIn')
-    
-    firebase.auth().signOut()
-    .then(function () {
-        
-        
-        console.log('logout***');
-        
-      })
-      const resetAction = StackActions.reset({
-        index: 0,
-        actions: [
-            NavigationActions.navigate({ routeName: 'LogIn' }),
-            // NavigationActions.navigate({ routeName: 'LogIn' }),
-        ]
-    })
-    this.props.navigation.dispatch(resetAction)
+    }
+    componentWillReceiveProps(props) {
+        if (props.name) {
+            console.log(USERNAME, 'user ****')
+        }
+    }
 
-}
-static navigationOptions = { header: null }
+
+    home() {
+        console.log('********');
+
+    }
+    Compony() {
+        alert('thankx')
+    }
+    User() {
+        alert('thankx')
+    }
+    static navigationOptions = { header: null }
     render() {
+        console.log('user name hare =>', this.props.name)
+        console.log('user UID =>', this.props.UID)
+
+        const { language, catagory, Mobile } = this.state
+       
 
         return (
             <View  >
-                <Text></Text>
-                <Button
-                    onPress={() => this.LogOut()}
-                    title="Log Out"
-                    color='black'
+                <AppHeader LogOut={this.props.navigation} />
+                <View>
+                    <Button
+                        // style={{marginTop: 100}}
+                        onPress={() => this.Compony()}
+                        title="Register Company"
+                        color='black'
 
-                />
+                    />
+                </View>
+                <View style={styles.btn}>
+
+                    <Button
+                        // style={{marginTop: 100}}
+                        onPress={() => this.User()}
+                        title="Are you finding/waiting for tokens"
+                        color='black'
+
+                    />
+                </View>
             </View>
         );
     }
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     // backgroundColor: '#7FB3D5',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     // marginTop: 20,
-//     // opacity:0.9
-//   },
+const styles = StyleSheet.create({
+    
+    val: {
+        // borderColor: 'gray', borderWidth: 2,
+
+        marginBottom: 50,
+        marginTop: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    Number: {
+        borderColor: 'gray', borderWidth: 1,
+        backgroundColor: 'rgba(255,255,255,0.3)',
+        marginTop: 20,
+        color: 'black',
+        width: 300,
+        height: 40,
+        paddingHorizontal: 10,
+        fontSize: 18
+    },
+    num: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    btn: {
+        marginTop: 150,
+    }
 
 
-// });
+});
+
+function mapStateToProps(states) {
+    return ({
+        name: states.authReducers.USERNAME,
+        UID: states.authReducers.UID
+    })
+}
+
+function mapDispatchToProps(dispatch) {
+    return ({
+        // userAuth: (Email, Password) => {
+        //     dispatch(userAction(Email, Password));
+        // }
+    })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

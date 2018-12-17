@@ -3,9 +3,11 @@ import { View, ScrollView, Text, TextInput, StyleSheet, Button, TouchableOpacity
 import { black } from 'ansi-colors';
 import firebase from '../Config/Firebase';
 import { StackActions, NavigationActions } from 'react-navigation';
+import { connect } from 'react-redux'
+import { Action, fb_Action } from '../../Redux/actions/authAction'
 
-// var provider = new firebase.auth.FacebookAuthProvider();
-export default class LogIn extends React.Component {
+
+class LogIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -15,14 +17,14 @@ export default class LogIn extends React.Component {
     }
 
     componentDidMount() {
+        // console.log('props****', this.props);
         firebase.auth().onAuthStateChanged((user) => {
             if (user != null) {
-                console.log(user);
                 const resetAction = StackActions.reset({
                     index: 0,
                     actions: [
                         NavigationActions.navigate({ routeName: 'Home' }),
-                        // NavigationActions.navigate({ routeName: 'LogIn' }),
+                        // NavigationActions.navigate({ routeName: 'SignUp' }),
                     ]
                 })
                 this.props.navigation.dispatch(resetAction)
@@ -33,28 +35,12 @@ export default class LogIn extends React.Component {
 
     logIn() {
         const { Email, Password } = this.state
-
-        firebase.auth().signInWithEmailAndPassword(Email, Password)
-            .then((success) => {
-                const resetAction = StackActions.reset({
-                    index: 0,
-                    actions: [
-                        NavigationActions.navigate({ routeName: 'Home' }),
-                    ]
-                })
-                this.props.navigation.dispatch(resetAction)
-            })
-            .catch((error) => {
-                alert('Invalid Email & Password')
-                console.log('something went wrong', error)
-            })
+        this.props.AuthUser(Email, Password)
         console.log('log');
-
     }
     SignUp() {
         console.log("sign up page");
         this.props.navigation.navigate('SignUp')
-
     }
 
     async logInFB() {
@@ -68,25 +54,7 @@ export default class LogIn extends React.Component {
         } = await Expo.Facebook.logInWithReadPermissionsAsync('307393933208156', {
             permissions: ['public_profile'],
         });
-        if (type === 'success') {
-            const credential = firebase.auth.FacebookAuthProvider.credential(token)
-
-            firebase.auth().signInAndRetrieveDataWithCredential(credential).catch((error) => {
-                console.log(error);
-
-            })
-            console.log("fb login");
-            const resetAction = StackActions.reset({
-                index: 0,
-                actions: [
-                    NavigationActions.navigate({ routeName: 'Home' }),
-                ]
-            })
-            this.props.navigation.dispatch(resetAction)
-        } else {
-            type === 'cancel'
-        }
-
+        this.props.fb_User(type, token)
     }
     static navigationOptions = { header: null }
     render() {
@@ -134,7 +102,7 @@ export default class LogIn extends React.Component {
                     <TouchableOpacity style={styles.buton} onPress={() => this.logInFB()}>
                         <Text style={styles.ButtonText} >Facebook LogIn</Text>
                     </TouchableOpacity>
-                
+
                 </ScrollView>
 
             </View>
@@ -179,8 +147,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         // width:150,
         // justifyContent: 'space-between',
-
-
     },
     ButtonText: {
         fontWeight: 'bold',
@@ -190,3 +156,24 @@ const styles = StyleSheet.create({
     }
 
 });
+function mapStateToProps(states) {
+    return ({
+        // products: states.productReducer.PRODUCTS,
+
+    })
+}
+
+function mapDispatchToProps(dispatch) {
+    return ({
+        AuthUser: (Email, Password) => {
+            dispatch(Action(Email, Password));
+
+        },
+
+        fb_User: (type, token) => {
+            dispatch(fb_Action(type, token))
+        }
+    })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LogIn);

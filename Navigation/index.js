@@ -2,6 +2,9 @@ import { createStackNavigator, createAppContainer, createDrawerNavigator, create
 import LogIn from '../src/Authentication/LogIn'
 import SignUp from '../src/Authentication/SignUp'
 import Home from '../src/Screen/Dashboard'
+import AppHeader from '../src/Component/Header/Header'
+
+
 
 const StackNavigator = createStackNavigator({
     LogIn: {
@@ -12,7 +15,10 @@ const StackNavigator = createStackNavigator({
     },
     Home:{
         screen: Home
-    }
+    },
+    // Header:{
+    //     screen: AppHeader
+    // }
 
 })
 const Navigation = createAppContainer(StackNavigator)
