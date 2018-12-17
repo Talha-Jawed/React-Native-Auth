@@ -24,7 +24,7 @@ export function userAction(FirstName, LastName, Mobile, Email, Password) {
                     Token: 'token'
                 }
                 console.log('signup successfully', obj);
-                firebase.database().ref('/UserData/' + currentUserUid + '/').push(obj);
+                firebase.database().ref('/UserData/' + currentUserUid).push(obj);
             })
             .catch((error) => {
                 alert(error)
